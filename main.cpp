@@ -11,7 +11,7 @@ using namespace std;
 class Observer {
 public:
     ~Observer() {};
-    virtual void update() = 0;
+    virtual void update(bool a, const string& s) = 0;
 };
 
 class Subject {
@@ -21,7 +21,7 @@ public:
     virtual ~Subject() {};
     virtual void addObserver(Observer* o)=0;
     virtual void removeObserver(Observer* o)=0;
-    virtual void notifyObserver()=0;
+    virtual void notifyObserver(bool a, const string& s)=0;
 };
 
 class Nota {
@@ -29,10 +29,12 @@ private:
     string titolo;
     string testo;
     bool bloccata;
+    string NomeCollezione;
     bool importante;
 public:
-    Nota (const string& t, const string& te): titolo(t), testo(te), bloccata(false), importante(false){};
+    Nota (const string& t, const string& te, string n): titolo(t), testo(te), bloccata(false), NomeCollezione(n), importante(false){};
     ~Nota(){};
+
     void blocca(){bloccata=true;};
     void sblocca(){bloccata=false;};
     void setTitolo(string t){
@@ -47,21 +49,41 @@ public:
         else
             testo=t;
     }
+    bool getBloccata(){return bloccata;}
 };
 
 class Collezione: public Subject{
 private:
+    list<Nota*> note;
     list<Observer*> obs;
+protected:
+    string nome;
 public:
-    Collezione(){};
+    Collezione(const string& n): nome(n){};
     ~Collezione(){};
-    virtual void addObserver(Observer* o) override{obs.push_back(o);};
-    virtual void removeObserver(Observer* o) override{obs.remove(o);};
-    virtual void notifyObserver() override{
-        for(auto i: obs){
-            i->update();
+    void addNota(Nota* n){
+        note.push_back(n);
+        bool a=true;
+        notifyObserver(a, nome);
+    }
+    void removeNota(Nota* n){
+        if (n->getBloccata()==true)
+            cout<<"la nota è bloccata, non può essere cancellata";
+        else {
+            note.remove(n);
+            bool a=false;
+            notifyObserver(a, nome);
         }
     }
+
+    virtual void addObserver(Observer* o) override{obs.push_back(o);};
+    virtual void removeObserver(Observer* o) override{obs.remove(o);};
+    virtual void notifyObserver(bool a, const string& s) override{
+        for(auto i: obs){
+            i->update(a, s);
+        }
+    }
+
 };
 
 class Counter: public Observer {
@@ -75,7 +97,7 @@ public:
     ~Counter(){
         c->removeObserver(this);
     };
-    void update() override{
+    void update(bool a, const string& s) override{
         // da implementare
     }
 
