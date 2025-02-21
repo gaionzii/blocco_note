@@ -23,3 +23,28 @@ public:
     virtual void removeObserver(Observer* o)=0;
     virtual void notifyObserver()=0;
 };
+
+class Nota {
+private:
+    string titolo;
+    string testo;
+    bool bloccata;
+    bool importante;
+public:
+    Nota (const string& t, const string& te): titolo(t), testo(te), bloccata(false), importante(false){};
+    ~Nota(){};
+    void blocca(){bloccata=true;};
+    void sblocca(){bloccata=false;};
+    void setTitolo(string t){
+        if (bloccata==true)
+            cout<<"la nota è bloccata, il suo titolo non è modificabile"<<endl;
+        else
+            titolo=t;
+    }
+    void setTesto(string t){
+        if (bloccata==true)
+            cout<<"la nota è bloccata, il suo testo non è modificabile"<<endl;
+        else
+            testo=t;
+    }
+};
