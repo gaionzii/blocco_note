@@ -48,3 +48,35 @@ public:
             testo=t;
     }
 };
+
+class Collezione: public Subject{
+private:
+    list<Observer*> obs;
+public:
+    Collezione(){};
+    ~Collezione(){};
+    virtual void addObserver(Observer* o) override{obs.push_back(o);};
+    virtual void removeObserver(Observer* o) override{obs.remove(o);};
+    virtual void notifyObserver() override{
+        for(auto i: obs){
+            i->update();
+        }
+    }
+};
+
+class Counter: public Observer {
+private:
+    int count;
+    Collezione* c;
+public:
+    Counter(Collezione* co): count(0), c(co){
+        c->addObserver(this);
+    };
+    ~Counter(){
+        c->removeObserver(this);
+    };
+    void update() override{
+        // da implementare
+    }
+
+};
